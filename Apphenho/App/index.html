@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đếm Ngày Yêu - Our Love Story 💗</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<!-- Thư viện html2canvas để xuất ảnh bill -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<!-- KHUNG ALBUM ẢNH PHÓNG TO (LIGHTBOX) -->
+<div id="photoLightbox" class="photo-lightbox" hidden>
+    <button class="lightbox-close" id="lightboxClose" aria-label="Đóng ảnh">×</button>
+    <button class="lightbox-prev" id="lightboxPrev" aria-label="Ảnh trước">‹</button>
+    <img id="lightboxImage" src="" alt="Ảnh kỷ niệm">
+    <button class="lightbox-next" id="lightboxNext" aria-label="Ảnh tiếp theo">›</button>
+</div>
+
+<!-- MÀN HÌNH CHÀO MỪNG BAN ĐẦU -->
+<div id="intro">
+  <div class="intro-content">
+    <button id="openBtn">
+      <b>💗</b>
+      <span>Chạm để mở khóa tình yêu</span>
+    </button>
+  </div>
+</div>
+
+<!-- HIỆU ỨNG HẠT ĐỘNG NỀN -->
+<div id="fx"></div>
+
+<!-- GIAO DIỆN CHÍNH -->
+<main id="app" hidden>
+  <section class="hero">
+    <div class="bg">
+      <i id="bg"></i>
+      <i id="bgFull"></i>
+    </div>
+    <div class="top">
+      <label class="btn glass hov-scale" id="bgUp">🖼️ Đổi ảnh nền<input type="file" accept="image/*" hidden></label>
+      <select id="themeSel" aria-label="Giao diện"></select>
+      <button class="glass hov-scale" id="setBtn" aria-label="Cài đặt">⚙️</button>
+    </div>
+    
+    <div class="hero-inner">
+      <p id="banner" hidden></p>
+      <p class="names"><span id="nA"></span> <span class="heart-pulse">💞</span> <span id="nB"></span></p>
+      <h1 id="days">0</h1>
+      <p class="lbl">ngày nguyện ước bên nhau</p>
+      <div class="time-badges">
+        <p id="detail" class="glass-badge"></p>
+        <p id="live" class="glass-badge"></p>
+      </div>
+      <p id="next" class="next-milestone"></p>
+
+      <div class="ava-wrapper">
+        <div class="ava">
+          <label id="avA" class="hov-scale"><span class="e">🧑</span><input type="file" accept="image/*" hidden></label>
+          <label id="avB" class="hov-scale"><span class="e">👩</span><input type="file" accept="image/*" hidden></label>
+        </div>
+        <small class="ava-hint">Bấm vào avatar tròn để thay ảnh thật của hai đứa 📷</small>
+      </div>
+
+      <label class="startPick glass hov-scale">
+        <span>💞 Ngày bắt đầu yêu</span>
+        <input type="date" id="startPick">
+      </label>
+    </div>
+  </section>
+
+  <!-- KHU VỰC THẺ CHỨC NĂNG (GRID) -->
+  <section class="grid">
+    <!-- Thẻ 1: Lời nhắn & Kho thẻ -->
+    <article class="card hov-lift">
+      <h2>💌 Thẻ tình yêu hôm nay</h2>
+      <div class="flip" id="flip" tabindex="0" role="button">Chạm để mở thẻ ngọt ngào hôm nay ✨</div>
+      <div class="row">
+        <input id="newNote" placeholder="Thêm câu ngọt ngào vào kho...">
+        <button id="addNote" class="hov-scale">Thêm</button>
+      </div>
+      <h3>☀️ Lời nhắn buổi sáng (tối đa 50 từ)</h3>
+      <textarea id="morning" rows="3" placeholder="Viết dòng nhắn nhủ cho người ấy đọc vào sáng mai..."></textarea>
+      <div class="row space-between">
+        <small id="wc">0/50 từ</small>
+        <button id="saveMorning" class="hov-scale">Lưu lời nhắn</button>
+      </div>
+      <div id="mShow" class="row"></div>
+    </article>
+
+    <!-- Thẻ 2: Đếm ngược sự kiện -->
+    <article class="card hov-lift">
+      <h2>⏳ Đếm ngược sự kiện trọng đại</h2>
+      <ul id="evList"></ul>
+      <div class="row">
+        <input id="evName" placeholder="Tên sự kiện (Kỷ niệm, du lịch...)">
+        <input id="evDate" type="date">
+      </div>
+      <div class="row">
+        <button id="addEv" class="full-width hov-scale">Thêm sự kiện mới</button>
+      </div>
+    </article>
+
+    <!-- Thẻ 3: Thông tin đôi lứa -->
+    <article class="card hov-lift">
+      <h2>📒 Nhật ký thông tin hai đứa</h2>
+      <div class="info" id="infoBox"></div>
+    </article>
+
+    <!-- Thẻ 4: Album mật -->
+    <article class="card hov-lift">
+      <h2>🔐 Album khoảnh khắc bí mật</h2>
+      <div id="lock" class="lock-box">
+        <button id="heartLock" class="heart-pulse-lg" aria-label="Trái tim bí mật">🤍</button>
+        <small>Bấm liên tục 3 lần vào trái tim hoặc nhập mật mã để mở</small>
+        <div class="row">
+          <input id="pw" type="password" placeholder="Nhập mật mã...">
+          <button id="pwBtn" class="hov-scale">Mở khóa</button>
+        </div>
+      </div>
+      <div id="gal" hidden>
+        <div class="row space-between">
+          <label class="btn hov-scale">+ Thêm ảnh kỷ niệm<input id="galUp" type="file" accept="image/*" multiple hidden></label>
+          <button id="relock" class="btn-secondary hov-scale">Khóa lại 🔒</button>
+        </div>
+        <div id="galGrid"></div>
+      </div>
+    </article>
+
+    <!-- Thẻ 5: Kế hoạch Đi Siêu Thị Thông Minh -->
+    <article class="card hov-lift">
+      <h2>🛒 Kế hoạch đi siêu thị</h2>
+      <p style="font-size: 0.9rem; margin-bottom: 15px; opacity: 0.85;">Lên thực đơn, xuất Bill PNG mang đi, và lưu lại lịch sử giá tiền cho lần sau.</p>
+      <button id="openShopModal" class="full-width hov-scale" style="padding: 12px; font-size: 1rem;">
+        📝 Mở Kế Hoạch & Xem Bill
+      </button>
+    </article>
+  </section>
+
+  <!-- Nút SOS Giận Dỗi -->
+  <button id="sosBtn" class="hov-scale">😢 Đang giận dỗi cần dỗ dành</button>
+</main>
+
+<!-- MODAL POPUP: KẾ HOẠCH & BILL ĐI SIÊU THỊ -->
+<dialog id="shopModal" class="shop-dialog">
+  <div class="shop-modal-content">
+    <div class="shop-modal-header">
+      <h2>🛒 Kế Hoạch & Bill Siêu Thị</h2>
+      <button id="closeShopModal" class="close-btn">✕</button>
+    </div>
+
+    <div class="shop-modal-body">
+      <!-- Bước 1: Món ăn định nấu -->
+      <section class="shop-section">
+        <h3>🍳 1. Món định nấu</h3>
+        <div class="row">
+          <input id="dishInput" placeholder="Tên món định làm (vd: Lẩu thái, Bò lúc lắc...)">
+          <button id="addDishBtn" class="hov-scale">Thêm món</button>
+        </div>
+        <div id="dishTags" class="dish-tags"></div>
+      </section>
+
+      <!-- Bước 2: Gợi ý mua lại từ lịch sử -->
+      <section class="shop-section">
+        <h3>💡 Gợi ý mua lại (Đồ từng mua kèm giá chuẩn)</h3>
+        <div id="historyTags" class="history-tags"></div>
+      </section>
+
+      <!-- Bước 3: Thêm đồ cần mua -->
+      <section class="shop-section">
+        <h3>📝 2. Đồ cần mua thêm</h3>
+        <div class="row">
+          <input id="modalShopName" placeholder="Tên đồ (vd: Thịt bò, Nấm...)" style="flex:2">
+          <input id="modalShopPrice" type="number" placeholder="Giá dự kiến (đ)" style="flex:1">
+          <button id="modalAddShopBtn" class="hov-scale">Thêm</button>
+        </div>
+      </section>
+
+      <!-- Bước 4: Khung Bill để xuất ảnh PNG -->
+      <section class="shop-section">
+        <div class="row space-between" style="margin-bottom: 8px;">
+          <h3>🧾 Bill Mua Sắm</h3>
+          <button id="exportBillPngBtn" class="btn-secondary hov-scale" style="padding: 4px 12px; font-size: 0.85rem;">📸 Xuất Bill PNG</button>
+        </div>
+        
+        <div id="billCaptureArea" class="bill-preview">
+          <div class="bill-header">
+            <h4>🛒 BILL ĐI SIÊU THỊ CHUNG</h4>
+            <small id="billDateText"></small>
+          </div>
+          <div id="billDishSummary" class="bill-dish-summary"></div>
+          <ul id="modalShopList" class="shop-list"></ul>
+          <div class="bill-footer">
+            <span id="modalShopSummary">0/0 món</span>
+            <strong id="modalShopTotal">Tổng tiền: 0đ</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bước 5: Chức năng Tải ảnh bill thực tế lên sau khi đi về -->
+      <section class="shop-section receipt-upload-section">
+        <h3>📷 3. Tải ảnh bill thực tế sau khi đi siêu thị về</h3>
+        <p style="font-size:0.82rem; opacity:0.8; margin-bottom:8px;">Lưu lại hóa đơn giấy hoặc ảnh thực tế để đối chiếu và tự động cập nhật giá vào hệ thống.</p>
+        <div class="row">
+          <label class="btn hov-scale" style="cursor:pointer; width:100%; justify-content:center;">
+            📁 Chọn ảnh hóa đơn thực tế lên hệ thống
+            <input id="receiptUploadInput" type="file" accept="image/*" hidden>
+          </label>
+        </div>
+        <div id="receiptGallery" class="receipt-gallery"></div>
+      </section>
+    </div>
+
+    <div class="shop-modal-footer">
+      <button id="clearBoughtModal" class="btn-secondary hov-scale">Xóa món đã mua</button>
+      <button id="saveAndCloseShop" class="hov-scale">Lưu & Đóng</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- GIAO DIỆN HỘP CỨU NẠN (GIẬN DỖI) -->
+<div id="sos" hidden></div>
+
+<!-- HỘP THOẠI CÀI ĐẶT -->
+<dialog id="dlg">
+  <form method="dialog">
+    <h2>⚙️ Cài đặt cấu hình</h2>
+    <label>Tên bạn thứ nhất<input id="sA"></label>
+    <label>Tên bạn thứ hai<input id="sB"></label>
+    <label>Ngày bắt đầu yêu<input id="sD" type="date"></label>
+    <label>Mật mã album bí mật<input id="sP"></label>
+    <div class="row modal-actions">
+      <button value="ok" class="hov-scale">Lưu thay đổi</button>
+      <button type="button" id="wipe" class="btn-danger hov-scale">Xóa dữ liệu web</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="script.js"></script>
+</body>
+</html>
